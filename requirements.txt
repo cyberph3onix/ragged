@@ -7,3 +7,6 @@ bitsandbytes
 requests
 pandas
 langchain-text-splitters
+scikit-learn
+chromadb
+ollama
