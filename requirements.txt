@@ -1,0 +1,9 @@
+torch
+PyMuPDF
+tqdm
+sentence-transformers
+accelerate
+bitsandbytes
+requests
+pandas
+langchain-text-splitters
