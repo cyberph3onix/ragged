@@ -29,3 +29,12 @@ Thumbs.db
 # Logs
 *.log
 
+# Jupyter notebooks
+notebooks/
+
+# PDF dataset
+data/pdfs/
+
+# Optional: keep folder structure but ignore contents
+# data/pdfs/*
+# !data/pdfs/.gitkeep
