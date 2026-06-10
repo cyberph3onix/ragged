@@ -75,7 +75,7 @@ class ChunkingSettings(BaseSettings):
 class EmbeddingSettings(BaseSettings):
     model:      str = "BAAI/bge-small-en-v1.5"
     batch_size: int = 32
-    device:     str = "auto"
+    device:     str = "cpu"  # or "auto", "cuda", "mps"
 
     @property
     def resolved_device(self) -> str:
@@ -115,9 +115,17 @@ class RerankerSettings(BaseSettings):
 
 
 class LLMSettings(BaseSettings):
-    model:       str   = "qwen3:4b"
+    provider: str = "ollama"
+
+    model: str = "qwen3:4b"
+
     temperature: float = 0.0
-    ollama_host: str   = "http://localhost:11434"
+
+    ollama_host: str = "http://localhost:11434"
+
+    groq_api_key: str = ""
+
+    gemini_api_key: str = ""
 
 
 class PromptSettings(BaseSettings):
@@ -127,7 +135,6 @@ class PromptSettings(BaseSettings):
         "If the context does not contain enough information to answer, say exactly: "
         "'I don't have enough information in the provided documents to answer this.' "
         "Do not speculate. Do not use prior knowledge. "
-        "After your answer, cite sources as: [filename, page N]."
     )
 
 
@@ -168,18 +175,21 @@ def _load_yaml() -> dict:
 
 
 def _build_settings() -> Settings:
-    d = _load_yaml()
-    return Settings(
-        paths=PathSettings(**d.get("paths", {})),
-        chunking=ChunkingSettings(**d.get("chunking", {})),
-        embedding=EmbeddingSettings(**d.get("embedding", {})),
-        chroma=ChromaSettings(**d.get("chroma", {})),
-        retrieval=RetrievalSettings(**d.get("retrieval", {})),
-        reranker=RerankerSettings(**d.get("reranker", {})),
-        llm=LLMSettings(**d.get("llm", {})),
-        prompts=PromptSettings(**d.get("prompts", {})),
-        eval=EvalSettings(**d.get("eval", {})),
-    )
+    return Settings()
+
+# def _build_settings() -> Settings:
+#     d = _load_yaml()
+#     return Settings(
+#         paths=PathSettings(**d.get("paths", {})),
+#         chunking=ChunkingSettings(**d.get("chunking", {})),
+#         embedding=EmbeddingSettings(**d.get("embedding", {})),
+#         chroma=ChromaSettings(**d.get("chroma", {})),
+#         retrieval=RetrievalSettings(**d.get("retrieval", {})),
+#         reranker=RerankerSettings(**d.get("reranker", {})),
+#         llm=LLMSettings(**d.get("llm", {})),
+#         prompts=PromptSettings(**d.get("prompts", {})),
+#         eval=EvalSettings(**d.get("eval", {})),
+#     )
 
 
 settings = _build_settings()

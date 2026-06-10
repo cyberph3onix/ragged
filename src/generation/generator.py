@@ -5,7 +5,7 @@ Takes retrieved chunks and a user query,
 builds a prompt, calls Ollama, and returns an answer.
 """
 
-from ollama import chat
+from llm.provider import LLMProvider
 
 from config import settings
 
@@ -53,18 +53,11 @@ class Generator:
             f"Question: {query}\n\n"
             f"Sources available: {sources}"
         )
-
-        response = chat(
-            model=settings.llm.model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-        )
+        print(f"[generator] Using model: {settings.llm.model}")
+        llm = LLMProvider()
+        response = llm.generate(prompt)
 
         return {
-            "answer": response["message"]["content"],
+            "answer": response,
             "sources": chunks,
         }
