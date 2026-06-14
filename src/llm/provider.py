@@ -1,5 +1,3 @@
-print("Loaded provider.py")
-
 from src.config import settings
 
 
@@ -7,8 +5,9 @@ class LLMProvider:
 
     def generate(self, prompt: str) -> str:
 
-        print("PROVIDER =", settings.llm.provider)
-        print("MODEL =", settings.llm.model)
+        # DEBUG
+        # print("PROVIDER =", settings.llm.provider)
+        # print("MODEL =", settings.llm.model)
 
         provider = settings.llm.provider.lower()
 

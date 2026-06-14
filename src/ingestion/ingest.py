@@ -16,6 +16,9 @@ Pipeline:
 """
 
 import chromadb
+import pickle
+
+from rank_bm25 import BM25Okapi
 
 from config import settings
 from loaders.pdf_loader import load_pdfs
@@ -43,6 +46,12 @@ def ingest() -> None:
 
     embeddings = embedder.encode(texts)
 
+    # Build BM25 index
+    tokenized_chunks = [
+    chunk["text"].lower().split()
+    for chunk in chunks
+]
+    bm25 = BM25Okapi(tokenized_chunks)
     print(
         f"[embedder] Embedded {len(texts)} chunks "
         f"→ shape {embeddings.shape}"
@@ -52,6 +61,21 @@ def ingest() -> None:
     settings.paths.chroma_db.mkdir(
         parents=True,
         exist_ok=True,
+    )
+
+    # Save BM25 index
+    with open(settings.paths.bm25_index, "wb") as f:
+        pickle.dump(
+            {
+                "bm25": bm25,
+                "chunks": chunks,
+            },
+            f,
+        )
+
+    print(
+        f"[bm25] Saved index to "
+        f"{settings.paths.bm25_index}"
     )
 
     client = chromadb.PersistentClient(

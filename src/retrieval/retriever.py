@@ -1,71 +1,83 @@
 """
 src/retrieval/retriever.py
 
-Vector retrieval from ChromaDB.
+Hybrid retrieval orchestrator.
 
-Input:
-    user query
+Currently:
+    vector retrieval
+    +
+    BM25 retrieval
 
-Output:
-    list of retrieved chunk dicts
+Future:
+    vector
+    + bm25
+    + RRF
+    + reranker
 """
 
-import chromadb
-
+from retrieval.vector_retriever import Retriever as VectorRetriever
+from retrieval.bm25_retriever import BM25Retriever
 from config import settings
-from embeddings.embedder import Embedder
 
 
 class Retriever:
+
     def __init__(self) -> None:
-        self.embedder = Embedder()
+        self.vector = VectorRetriever()
+        self.bm25 = BM25Retriever()
 
-        self.client = chromadb.PersistentClient(
-            path=str(settings.paths.chroma_db)
-        )
+    def retrieve(
+        self,
+        query: str,
+    ) -> list[dict]:
 
-        self.collection = self.client.get_collection(
-            settings.chroma.collection_name
-        )
+        vector_results = self.vector.retrieve(query)
 
-    def retrieve(self, query: str) -> list[dict]:
-        """
-        Retrieve top-k chunks from Chroma.
+        bm25_results = self.bm25.retrieve(query)
 
-        Returns:
-            [
-                {
-                    "text": "...",
-                    "source": "...",
-                    "page": 1,
-                    "chunk_id": "123",
-                    "distance": 0.42,
+        rrf_scores = {}
+
+        k = 60
+
+        # Vector rankings
+        for rank, chunk in enumerate(vector_results, start=1):
+
+            chunk_id = chunk["chunk_id"]
+
+            if chunk_id not in rrf_scores:
+                rrf_scores[chunk_id] = {
+                    "chunk": chunk,
+                    "score": 0.0,
                 }
-            ]
-        """
 
-        query_embedding = self.embedder.encode_query(query)
-
-        results = self.collection.query(
-            query_embeddings=[query_embedding.tolist()],
-            n_results=settings.retrieval.top_k,
-        )
-
-        retrieved_chunks = []
-
-        for doc, meta, dist in zip(
-            results["documents"][0],
-            results["metadatas"][0],
-            results["distances"][0],
-        ):
-            retrieved_chunks.append(
-                {
-                    "text": doc,
-                    "source": meta["source"],
-                    "page": meta["page"],
-                    "chunk_id": meta["chunk_id"],
-                    "distance": dist,
-                }
+            rrf_scores[chunk_id]["score"] += (
+                1 / (k + rank)
             )
 
-        return retrieved_chunks
+        # BM25 rankings
+        for rank, chunk in enumerate(bm25_results, start=1):
+
+            chunk_id = chunk["chunk_id"]
+
+            if chunk_id not in rrf_scores:
+                rrf_scores[chunk_id] = {
+                    "chunk": chunk,
+                    "score": 0.0,
+                }
+
+            rrf_scores[chunk_id]["score"] += (
+                1 / (k + rank)
+            )
+
+        ranked = sorted(
+            rrf_scores.values(),
+            key=lambda x: x["score"],
+            reverse=True,
+        )
+
+        return [
+            item["chunk"]
+            for item in ranked[
+                : settings.retrieval.top_k
+            ]
+        ]

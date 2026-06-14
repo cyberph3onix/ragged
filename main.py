@@ -36,13 +36,21 @@ def run_query(query: str) -> None:
     print(f"Retrieved {len(chunks)} chunks\n")
 
     for i, chunk in enumerate(chunks, start=1):
+
+        metric = f"RRF={chunk['retrieval_score']:.4f}"
+
         print(
             f"[{i}] "
             f"{chunk['source']} "
             f"p.{chunk['page']} "
-            f"dist={chunk['distance']:.4f}"
+            f"{metric}"
         )
-        print(chunk["text"][:120].replace("\n", " "))
+
+        print(
+            chunk["text"][:120]
+            .replace("\n", " ")
+        )
+
         print()
 
     generator = Generator()

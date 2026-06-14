@@ -1,292 +1,297 @@
 # 🚀 RAGGED
 
-> A fully local, privacy-first Retrieval-Augmented Generation (RAG) system built from scratch in Python.
+> A privacy-first, fully local Retrieval-Augmented Generation (RAG) system built from scratch in Python.
 
-RAGGED ingests PDF documents, converts them into embeddings, stores them in a vector database, retrieves relevant context for user queries, and generates answers using a local Large Language Model (LLM).
+RAGGED transforms your documents into a searchable knowledge base and allows Large Language Models (LLMs) to answer questions grounded in your own data.
 
-No OpenAI API. No cloud dependency. No document uploads.
+Instead of relying solely on an LLM's training data, RAGGED retrieves relevant information from your documents at query time and injects that context into the model's prompt, dramatically improving factual accuracy and reducing hallucinations.
 
 Everything runs locally on your machine.
 
----
-
-## ✨ Features
-
-### 📄 PDF Ingestion
-
-* Load and process multiple PDF documents
-* Extract text page-by-page using PyMuPDF
-* Support for building knowledge bases from multiple documents
-
-### ✂️ Intelligent Chunking
-
-* Recursive character-based chunking
-* Configurable chunk size and overlap
-* Preserves context across chunk boundaries
-
-### 🧠 Semantic Embeddings
-
-* Powered by `BAAI/bge-small-en-v1.5`
-* Converts document chunks into dense vector representations
-* Supports CPU and GPU acceleration
-
-### 🗄️ Vector Database
-
-* Persistent ChromaDB storage
-* Fast semantic similarity search
-* Rebuildable and reproducible indexing pipeline
-
-### 🔍 Semantic Retrieval
-
-* Retrieves the most relevant chunks for a query
-* Configurable Top-K retrieval
-* Source-aware document search
-
-### 🤖 Local LLM Generation
-
-* Powered by Ollama
-* Completely offline inference
-* Context-grounded answer generation
-
-### ⚙️ Configuration System
-
-* YAML configuration support
-* Environment variable overrides
-* Centralized settings management
-
-### 🔒 Privacy First
-
-* No external APIs
-* No cloud processing
-* No data leaves your machine
+No OpenAI required. No cloud dependency. No vendor lock-in.
 
 ---
 
-## 🏗️ Architecture
+# Why RAG?
+
+Large Language Models are powerful, but they have two major limitations:
+
+* They cannot access your private documents.
+* They can generate incorrect or hallucinated answers.
+
+Retrieval-Augmented Generation solves this by introducing a retrieval layer.
+
+When a user asks a question:
+
+1. Relevant document chunks are retrieved.
+2. Retrieved context is added to the prompt.
+3. The LLM generates an answer grounded in those documents.
+
+This allows the model to answer questions about information it was never trained on.
+
+---
+
+# How RAGGED Works
 
 ```text
-PDF Documents
-      │
-      ▼
+Documents
+    │
+    ▼
  PDF Loader
-      │
-      ▼
-   Chunker
-      │
-      ▼
-  Embedder
-      │
-      ▼
-  ChromaDB
-      │
-      ▼
- Retriever
-      │
-      ▼
- Generator
-      │
-      ▼
-  Response
+    │
+    ▼
+ Chunking
+    │
+    ▼
+ Embeddings
+    │
+    ▼
+ ChromaDB
+    │
+    ▼
+ Retrieval
+    │
+    ▼
+ Prompt Construction
+    │
+    ▼
+ LLM
+    │
+    ▼
+ Answer
 ```
 
----
-
-## 📂 Project Structure
+Example query:
 
 ```text
-ragged/
-│
-├── main.py
-│
-└── src/
-    ├── config.py
-    │
-    ├── loaders/
-    │   └── pdf_loader.py
-    │
-    ├── chunking/
-    │   └── chunker.py
-    │
-    ├── embeddings/
-    │   └── embedder.py
-    │
-    ├── ingestion/
-    │   └── ingest.py
-    │
-    ├── retrieval/
-    │   └── retriever.py
-    │
-    └── generation/
-        └── generator.py
+Question:
+"What happened to Dorothy's house?"
+
+↓
+
+Vector Search
+
+↓
+
+Top Relevant Chunks
+
+↓
+
+Context Construction
+
+↓
+
+LLM Generation
+
+↓
+
+Grounded Answer
 ```
 
 ---
 
-## ⚡ GPU Acceleration
+# Features
 
-RAGGED automatically detects available hardware and uses the best available backend.
+## Document Ingestion
 
-Supported devices:
+* PDF document loading via PyMuPDF
+* Multi-document knowledge bases
+* Automatic metadata extraction
+* Source tracking
 
-* NVIDIA CUDA
-* Apple Silicon (MPS)
-* CPU fallback
+## Chunking
 
-GPU users can expect significantly faster embedding generation and ingestion times.
+* Recursive character splitting
+* Configurable chunk size
+* Configurable overlap
+* Context preservation
+
+## Embeddings
+
+* BAAI/bge-small-en-v1.5
+* GPU acceleration support
+* CPU fallback support
+* Batch embedding generation
+
+## Vector Storage
+
+* ChromaDB persistence
+* Local vector database
+* Fast similarity search
+
+## Retrieval
+
+* Semantic vector retrieval
+* Configurable Top-K search
+* Source-aware results
+
+## Generation
+
+* Ollama support
+* Groq support
+* Gemini support
+* Provider abstraction layer
+
+## Configuration
+
+* YAML configuration
+* Environment variables
+* Centralized settings system
+
+## Privacy
+
+* Fully local workflow
+* No mandatory cloud services
+* User-controlled data
 
 ---
 
-## 🚀 Getting Started
+# Installation
 
-### 1. Ingest Documents
+## Prerequisites
 
-Place your PDFs inside:
+* Python 3.12+
+* UV
+* Ollama (optional for local inference)
+
+Install UV:
+
+```bash
+pip install uv
+```
+
+Clone the repository:
+
+```bash
+git clone <repo-url>
+cd ragged
+```
+
+Create the environment:
+
+```bash
+uv sync
+```
+
+---
+
+# Configuration
+
+Create a `.env` file:
+
+```env
+RAG_LLM__PROVIDER=groq
+RAG_LLM__MODEL=llama-3.3-70b-versatile
+RAG_LLM__GROQ_API_KEY=YOUR_API_KEY
+```
+
+Or use local Ollama:
+
+```env
+RAG_LLM__PROVIDER=ollama
+RAG_LLM__MODEL=qwen3:4b
+```
+
+---
+
+# Quick Start
+
+## Step 1 — Add Documents
+
+Place PDFs in:
 
 ```text
 data/pdfs/
 ```
 
-Then build the vector database:
+## Step 2 — Build the Knowledge Base
 
 ```bash
 python main.py --ingest
 ```
 
-Example:
-
-```text
-=== INGEST ===
-[pdf_loader] Loaded 21 pages from 2 PDFs
-[chunker] 21 pages → 158 chunks
-[embedder] Embedded 158 chunks
-[chroma] Collection 'documents' now has 158 chunks
-=== INGEST DONE ===
-```
-
----
-
-### 2. Query the Knowledge Base
+## Step 3 — Ask Questions
 
 ```bash
 python main.py --query "What is Retrieval-Augmented Generation?"
 ```
 
-Example Flow:
-
-```text
-Question
-    ↓
-Semantic Search
-    ↓
-Top-K Retrieval
-    ↓
-Context Construction
-    ↓
-Local LLM Generation
-    ↓
-Answer
-```
-
 ---
 
-## 🛠️ Tech Stack
+# Current Status
 
-### Core Technologies
-
-* Python
-* Ollama
-* ChromaDB
-* Sentence Transformers
-
-### Models
-
-* `BAAI/bge-small-en-v1.5` (Embeddings)
-* `Qwen3` (Generation)
-
-### Libraries
-
-* PyMuPDF
-* LangChain Text Splitters
-* Pydantic
-* PyYAML
-
----
-
-## 📈 Current Status
-
-### ✅ Prototype (Phase 1 Complete)
+## Phase 1 — Complete
 
 Implemented:
 
 * PDF ingestion
 * Recursive chunking
-* Semantic embeddings
+* Embedding generation
 * ChromaDB persistence
 * Vector retrieval
-* Ollama integration
-* End-to-end local RAG pipeline
-* Config-driven architecture
-
-The system is fully functional and capable of answering questions using local documents.
+* Multi-provider LLM support
+* End-to-end RAG pipeline
 
 ---
 
-## 🔮 Coming Soon
+# Roadmap
 
-### Phase 2 — Hybrid Retrieval
+## Phase 2 — Retrieval Quality
 
-* BM25 Retrieval
-* Hybrid Search (BM25 + Vector Search)
+* BM25 retrieval
+* Hybrid retrieval
 * Reciprocal Rank Fusion (RRF)
 * Retrieval diagnostics
 
-### Phase 3 — Better Answers
+## Phase 3 — Reranking
 
-* Cross-Encoder Reranking
-* Improved source attribution
-* Context compression
+* Cross-Encoder reranker
+* Better context selection
 * Reduced hallucinations
 
-### Phase 4 — Evaluation Framework
+## Phase 4 — Evaluation
 
-* Golden dataset generation
-* Faithfulness scoring
-* Answer relevancy evaluation
-* Retrieval benchmarking
+* Golden datasets
+* Faithfulness metrics
+* Retrieval evaluation
+* Benchmarking
 
-### Phase 5 — User Interface
+## Phase 5 — User Experience
 
-* Gradio web application
-* Drag-and-drop PDF upload
-* Chat-style interface
-* Real-time document indexing
+* Gradio UI
+* Drag-and-drop uploads
+* Streaming responses
+* Chat interface
 
-### Phase 6 — Production Readiness
+## Phase 6 — Production
 
 * Docker support
 * REST API
 * Automated testing
-* Structured logging
-* Monitoring and observability
+* CI/CD
+* Monitoring
 
 ---
 
-## 🎯 Goals
+# Tech Stack
 
-RAGGED is not just a RAG application.
-
-The goal of this project is to understand, implement, and optimize every major component of a modern Retrieval-Augmented Generation pipeline from scratch while keeping the entire stack local, transparent, and extensible.
+* Python
+* ChromaDB
+* Sentence Transformers
+* Ollama
+* Groq
+* Gemini
+* PyMuPDF
+* LangChain Text Splitters
+* Pydantic
+* UV
 
 ---
 
-## 👨‍💻 Author
+# Author
 
 **Shreshta Raaj Gupta**
 
 Computer Science Engineering Student • AI Engineer • DevOps Enthusiast
 
 Building systems to understand how they work under the hood—not just how to use them.
-
----
-
-### ⭐ If you find this project interesting, consider starring the repository.

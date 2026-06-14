@@ -53,7 +53,12 @@ class Generator:
             f"Question: {query}\n\n"
             f"Sources available: {sources}"
         )
-        print(f"[generator] Using model: {settings.llm.model}")
+        
+        # DEBUG
+        # print("\n=== CONTEXT ===\n")
+        # print(context[:3000])
+        # print("\n=== END CONTEXT ===\n")        
+
         llm = LLMProvider()
         response = llm.generate(prompt)
 
