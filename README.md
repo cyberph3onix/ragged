@@ -34,50 +34,60 @@ This allows the model to answer questions about information it was never trained
 # How RAGGED Works
 
 ```text
-Documents
-    │
-    ▼
- PDF Loader
-    │
-    ▼
- Chunking
-    │
-    ▼
- Embeddings
-    │
-    ▼
- ChromaDB
-    │
-    ▼
- Retrieval
-    │
-    ▼
+       Documents
+           │
+           ▼
+       PDF Loader
+           │
+           ▼
+        Chunking
+       /        \
+      ▼          ▼
+ Embeddings   BM25 Index
+ (Semantic)   (Lexical)
+      │          │
+      ▼          ▼
+  ChromaDB       │
+      \          /
+       ▼        ▼
+     Hybrid Search
+    (RRF Fusion)
+         │
+         ▼
+    Cross-Encoder
+      Reranking
+         │
+         ▼
  Prompt Construction
-    │
-    ▼
- LLM
-    │
-    ▼
- Answer
+         │
+         ▼
+     Local LLM
+         │
+         ▼
+      Answer
 ```
 
 Example query:
 
 ```text
 Question:
-"What happened to Dorothy's house?"
+"Why did the Tin Woodman rust?"
 
 ↓
 
-Vector Search
+Hybrid Search (Vector Similarity + BM25 Lexical)
 
 ↓
 
-Top Relevant Chunks
+Reciprocal Rank Fusion (RRF) Candidates Merging
 
 ↓
 
-Context Construction
+Cross-Encoder Reranking (MS-MARCO MiniLM)
+
+↓
+
+Context Construction (Top Chunks Sorted by Rerank Score)
 
 ↓
 
@@ -119,11 +129,14 @@ Grounded Answer
 * Local vector database
 * Fast similarity search
 
-## Retrieval
+## Lexical Indexing
+* BM25 retrieval powered by `rank-bm25`
+* Persistent lexical index serialization
 
-* Semantic vector retrieval
-* Configurable Top-K search
-* Source-aware results
+## Hybrid Retrieval & Reranking
+* Hybrid retrieval mode combining Vector (semantic) + BM25 (lexical) search
+* Reciprocal Rank Fusion (RRF) for robust scoring combinations
+* Cross-Encoder Reranking using `cross-encoder/ms-marco-MiniLM-L-6-v2` to maximize retrieval precision
 
 ## Generation
 
@@ -134,9 +147,8 @@ Grounded Answer
 
 ## Configuration
 
-* YAML configuration
 * Environment variables
-* Centralized settings system
+* Centralized Settings system (Pydantic Settings)
 
 ## Privacy
 
@@ -221,9 +233,6 @@ python main.py --query "What is Retrieval-Augmented Generation?"
 # Current Status
 
 ## Phase 1 — Complete
-
-Implemented:
-
 * PDF ingestion
 * Recursive chunking
 * Embedding generation
@@ -232,39 +241,34 @@ Implemented:
 * Multi-provider LLM support
 * End-to-end RAG pipeline
 
+## Phase 2 — Complete
+* BM25 Lexical retrieval
+* Hybrid retrieval mode
+* Reciprocal Rank Fusion (RRF)
+* Retrieval diagnostics
+
+## Phase 3 — Complete
+* Cross-Encoder reranker integration
+* Context precision optimization via MS-MARCO MiniLM
+* Hallucination mitigation
+
 ---
 
 # Roadmap
 
-## Phase 2 — Retrieval Quality
-
-* BM25 retrieval
-* Hybrid retrieval
-* Reciprocal Rank Fusion (RRF)
-* Retrieval diagnostics
-
-## Phase 3 — Reranking
-
-* Cross-Encoder reranker
-* Better context selection
-* Reduced hallucinations
-
 ## Phase 4 — Evaluation
-
 * Golden datasets
 * Faithfulness metrics
 * Retrieval evaluation
 * Benchmarking
 
 ## Phase 5 — User Experience
-
 * Gradio UI
 * Drag-and-drop uploads
 * Streaming responses
 * Chat interface
 
 ## Phase 6 — Production
-
 * Docker support
 * REST API
 * Automated testing
