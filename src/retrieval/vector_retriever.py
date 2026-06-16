@@ -48,7 +48,7 @@ class Retriever:
 
         results = self.collection.query(
             query_embeddings=[query_embedding.tolist()],
-            n_results=settings.retrieval.top_k,
+            n_results=settings.retrieval.candidate_k,
         )
 
         retrieved_chunks = []

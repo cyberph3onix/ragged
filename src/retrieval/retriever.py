@@ -18,6 +18,7 @@ Future:
 from retrieval.vector_retriever import Retriever as VectorRetriever
 from retrieval.bm25_retriever import BM25Retriever
 from config import settings
+from retrieval.reranker import Reranker
 
 
 class Retriever:
@@ -25,7 +26,7 @@ class Retriever:
     def __init__(self) -> None:
         self.vector = VectorRetriever()
         self.bm25 = BM25Retriever()
-
+        self.reranker = Reranker()
     def retrieve(
         self,
         query: str,
@@ -75,9 +76,19 @@ class Retriever:
             reverse=True,
         )
 
-        return [
+        for item in ranked:
+            item["chunk"]["rrf_score"] = item["score"]
+
+        candidates = [
             item["chunk"]
-            for item in ranked[
-                : settings.retrieval.top_k
-            ]
+            for item in ranked
+        ]
+
+        reranked = self.reranker.rerank(
+            query=query,
+            chunks=candidates,
+        )
+
+        return reranked[
+            : settings.retrieval.top_k
         ]

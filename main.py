@@ -37,13 +37,16 @@ def run_query(query: str) -> None:
 
     for i, chunk in enumerate(chunks, start=1):
 
-        metric = f"RRF={chunk['retrieval_score']:.4f}"
+        metric = (
+            f"RRF={chunk.get('rrf_score', 0.0):.4f} | "
+            f"Rerank={chunk.get('rerank_score', 0.0):.4f}"
+        )
 
         print(
             f"[{i}] "
             f"{chunk['source']} "
             f"p.{chunk['page']} "
-            f"{metric}"
+            f"({metric})"
         )
 
         print(

@@ -38,3 +38,7 @@ data/pdfs/
 # Optional: keep folder structure but ignore contents
 # data/pdfs/*
 # !data/pdfs/.gitkeep
+
+# Exclude test reranker and skill docs
+test_reranker.py
+SKILL.md
