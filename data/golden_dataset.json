@@ -1,0 +1,50 @@
+[
+    {
+        "question": "What did Dorothy and her friends do before they went to see Glinda?",
+        "ground_truth": "Before they went to see Glinda, they were taken to a room of the Castle where they cleaned themselves up. Dorothy washed her face and combed her hair, the Lion shook the dust out of his mane, the Scarecrow patted himself into his best shape, and the Woodman polished his tin and oiled his joints.",
+        "reference_contexts": [
+            "Before they went to see Glinda, however, they were taken to a room of the Castle, where Dorothy washed her face and combed her hair, and the Lion shook the dust out of his mane, and the Scarecrow patted himself into his best shape, and the Woodman polished his tin and oiled his joints."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 133,
+            "chunk_id": "337"
+        }
+    },
+    {
+        "question": "How would you describe Glinda, the Good Witch?",
+        "ground_truth": "Glinda was both beautiful and young. Her hair was a rich red in color and fell in flowing ringlets over her shoulders. She wore a pure white dress and had blue eyes that looked kindly upon Dorothy.",
+        "reference_contexts": [
+            "She was both beautiful and young to their eyes. Her hair was a rich red in color and fell in flowing ringlets over her shoulders. Her dress was pure white but her eyes were blue, and they looked kindly upon the little girl."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 133,
+            "chunk_id": "337"
+        }
+    },
+    {
+        "question": "How did Dorothy manage to get along in the dark?",
+        "ground_truth": "Dorothy managed to get along fairly well by taking hold of the Scarecrow's arm, as he declared he could see as well as by day.",
+        "reference_contexts": [
+            "So she took hold of his arm and managed to get along fairly well."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 25,
+            "chunk_id": "59"
+        }
+    },
+    {
+        "question": "What did the Scarecrow see that made them consider stopping for the night?",
+        "ground_truth": "The Scarecrow saw a little cottage at the right of them, built of logs and branches, which made them consider stopping for the night.",
+        "reference_contexts": [
+            "I see a little cottage at the right of us, he said, built of logs and branches. Shall we go there?"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 25,
+            "chunk_id": "59"
+        }
+    }
+]

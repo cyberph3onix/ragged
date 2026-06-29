@@ -107,9 +107,15 @@ def main() -> None:
         help="Question to ask",
     )
 
+    parser.add_argument(
+        "--eval",
+        action="store_true",
+        help="Run RAG pipeline quality evaluation and threshold validation",
+    )
+
     args = parser.parse_args()
 
-    if not args.ingest and not args.query:
+    if not args.ingest and not args.query and not args.eval:
         parser.print_help()
         sys.exit(0)
 
@@ -118,6 +124,10 @@ def main() -> None:
 
     if args.query:
         run_query(args.query)
+
+    if args.eval:
+        from scripts.run_eval import run_evaluation
+        run_evaluation()
 
 
 if __name__ == "__main__":
