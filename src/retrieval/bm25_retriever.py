@@ -9,7 +9,7 @@ the most relevant chunks for a query.
 
 import pickle
 
-from src.config import settings
+from config import settings
 
 
 class BM25Retriever:

@@ -1,4 +1,4 @@
-from src.config import settings
+from config import settings
 
 
 class LLMProvider:
@@ -25,19 +25,25 @@ class LLMProvider:
         )
 
     def _ollama(self, prompt: str) -> str:
-        from ollama import chat
+        from ollama import Client
 
-        response = chat(
+        # Keep provider timeout aligned with evaluator RunConfig (900s) so
+        # long metric prompts do not fail at the HTTP client layer first.
+        client = Client(host=settings.llm.ollama_host, timeout=900)
+
+        # Prepend /no_think to suppress qwen3-family thinking tokens at generation time,
+        # which dramatically reduces latency on CPU for long evaluation prompts.
+        response = client.chat(
             model=settings.llm.model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
+            messages=[{"role": "user", "content": "/no_think\n\n" + prompt}],
+            think=False,
         )
 
-        return response["message"]["content"]
+        content = response.message.content or ""
+        # Fallback: strip any residual </think> delimiter that Ollama didn't remove
+        if "</think>" in content:
+            content = content.split("</think>", 1)[-1]
+        return content.strip()
 
     def _groq(self, prompt: str) -> str:
         from groq import Groq

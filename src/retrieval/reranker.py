@@ -55,7 +55,7 @@ descending rerank_score.
 
 from sentence_transformers import CrossEncoder
 
-from src.config import settings
+from config import settings
 
 
 class Reranker:

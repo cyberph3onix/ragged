@@ -20,13 +20,17 @@ from evaluation.dataset import GoldenDataset
 
 from ragas.llms.base import BaseRagasLLM
 from ragas.embeddings.base import BaseRagasEmbeddings
+from ragas.run_config import RunConfig
 from langchain_core.outputs import LLMResult, Generation
 from langchain_core.prompt_values import PromptValue
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-from ragas.metrics import Faithfulness, AnswerRelevancy, ContextPrecision, ContextRecall
+from ragas.metrics._faithfulness import Faithfulness
+from ragas.metrics._answer_relevance import AnswerRelevancy
+from ragas.metrics._context_precision import ContextPrecision
+from ragas.metrics._context_recall import ContextRecall
 
 
 class RagasLLMWrapper(BaseRagasLLM):
@@ -127,32 +131,70 @@ class RagasEvaluator:
             
         return pd.DataFrame(results)
 
-    def evaluate_results(self, df: pd.DataFrame) -> dict:
+    def evaluate_results(self, df: pd.DataFrame, metric_names: list[str] | None = None) -> dict:
         """
         Executes evaluation on the generated DataFrame using wrapped LLM and embeddings.
+
+        Args:
+            metric_names: Which RAGAS metrics to compute. Defaults to all four.
+                For fast iteration pass just the gated metrics
+                (["faithfulness", "answer_relevancy"]) to avoid the expensive
+                per-context ContextPrecision fan-out.
         """
         dataset = Dataset.from_pandas(df)
-        
+
         # Instantiate wrappers
         ragas_llm = RagasLLMWrapper(self.llm_provider)
         ragas_embeddings = RagasEmbeddingsWrapper(self.embedder)
-        
-        # Select metrics and initialize with wrappers
-        metrics = [
-            Faithfulness(llm=ragas_llm),
-            AnswerRelevancy(llm=ragas_llm, embeddings=ragas_embeddings),
-            ContextPrecision(llm=ragas_llm),
-            ContextRecall(llm=ragas_llm),
-        ]
+
+        # Metric registry — built lazily so we only construct the ones requested.
+        metric_factory = {
+            "faithfulness":      lambda: Faithfulness(llm=ragas_llm),
+            "answer_relevancy":  lambda: AnswerRelevancy(llm=ragas_llm, embeddings=ragas_embeddings),
+            "context_precision": lambda: ContextPrecision(llm=ragas_llm),
+            "context_recall":    lambda: ContextRecall(llm=ragas_llm),
+        }
+
+        if metric_names is None:
+            metric_names = list(metric_factory.keys())
+
+        unknown = [m for m in metric_names if m not in metric_factory]
+        if unknown:
+            raise ValueError(
+                f"Unknown metric(s): {unknown}. Valid: {list(metric_factory.keys())}"
+            )
+
+        metrics = [metric_factory[name]() for name in metric_names]
 
         from ragas import evaluate
-        
+
+        # Map our DataFrame columns to RAGAS's expected internal names
+        column_map = {
+            "user_input": "question",
+            "response": "answer",
+            "retrieved_contexts": "contexts",
+            "reference": "ground_truth",
+        }
+
+        # Local Ollama is single-threaded on CPU, so keep it sequential. Cloud
+        # providers (Groq/Gemini) tolerate concurrency, which turns dozens of
+        # sequential round-trips into a handful of parallel batches.
+        provider = settings.llm.provider.lower()
+        max_workers = 1 if provider == "ollama" else 4
+
+        # Allow up to 15 min per LLM call and cap retries to avoid spending hours
+        # on transient failures.
+        run_config = RunConfig(timeout=900, max_retries=3, max_wait=120, max_workers=max_workers)
+
         print("Running RAGAS evaluation framework...")
         result = evaluate(
             dataset=dataset,
             metrics=metrics,
             llm=ragas_llm,
-            embeddings=ragas_embeddings
+            embeddings=ragas_embeddings,
+            column_map=column_map,
+            run_config=run_config,
+            raise_exceptions=False,
         )
-        
+
         return result

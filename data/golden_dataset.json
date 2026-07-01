@@ -1,7 +1,7 @@
 [
     {
         "question": "What did Dorothy and her friends do before they went to see Glinda?",
-        "ground_truth": "Before they went to see Glinda, they were taken to a room of the Castle where they cleaned themselves up. Dorothy washed her face and combed her hair, the Lion shook the dust out of his mane, the Scarecrow patted himself into his best shape, and the Woodman polished his tin and oiled his joints.",
+        "ground_truth": "Before they went to see Glinda, they were taken to a room of the Castle where they prepared themselves to be presentable. This included Dorothy washing her face and combing her hair, the Lion shaking the dust out of his mane, the Scarecrow patting himself into his best shape, and the Woodman polishing his tin and oiling his joints.",
         "reference_contexts": [
             "Before they went to see Glinda, however, they were taken to a room of the Castle, where Dorothy washed her face and combed her hair, and the Lion shook the dust out of his mane, and the Scarecrow patted himself into his best shape, and the Woodman polished his tin and oiled his joints."
         ],
@@ -12,10 +12,10 @@
         }
     },
     {
-        "question": "How would you describe Glinda, the Good Witch?",
-        "ground_truth": "Glinda was both beautiful and young. Her hair was a rich red in color and fell in flowing ringlets over her shoulders. She wore a pure white dress and had blue eyes that looked kindly upon Dorothy.",
+        "question": "What did Glinda ask Dorothy when they met?",
+        "ground_truth": "Glinda asked Dorothy, 'What can I do for you, my child?'",
         "reference_contexts": [
-            "She was both beautiful and young to their eyes. Her hair was a rich red in color and fell in flowing ringlets over her shoulders. Her dress was pure white but her eyes were blue, and they looked kindly upon the little girl."
+            "'What can I do for you, my child?' she asked."
         ],
         "metadata": {
             "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
@@ -25,7 +25,7 @@
     },
     {
         "question": "How did Dorothy manage to get along in the dark?",
-        "ground_truth": "Dorothy managed to get along fairly well by taking hold of the Scarecrow's arm, as he declared he could see as well as by day.",
+        "ground_truth": "Dorothy managed to get along fairly well by taking hold of the Scarecrow's arm, since he declared he could see as well as by day.",
         "reference_contexts": [
             "So she took hold of his arm and managed to get along fairly well."
         ],
@@ -36,8 +36,8 @@
         }
     },
     {
-        "question": "What did the Scarecrow see that made them consider stopping for the night?",
-        "ground_truth": "The Scarecrow saw a little cottage at the right of them, built of logs and branches, which made them consider stopping for the night.",
+        "question": "What did the Scarecrow see that made him suggest they go there?",
+        "ground_truth": "The Scarecrow saw a little cottage at the right of them, built of logs and branches, which is why he suggested they go there.",
         "reference_contexts": [
             "I see a little cottage at the right of us, he said, built of logs and branches. Shall we go there?"
         ],
@@ -45,6 +45,534 @@
             "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
             "page": 25,
             "chunk_id": "59"
+        }
+    },
+    {
+        "question": "What happened to Dorothy when she was awakened by a shock?",
+        "ground_truth": "Dorothy caught her breath and wondered what had happened due to the sudden and severe shock, and if she had not been lying on the soft bed, she might have been hurt.",
+        "reference_contexts": [
+            "She was awakened by a shock, so sudden and severe that if Dorothy had not been lying on the soft bed she might have been hurt."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 7,
+            "chunk_id": "12"
+        }
+    },
+    {
+        "question": "Where did the cyclone set the house down?",
+        "ground_truth": "The cyclone set the house down in the midst of a country of marvelous beauty.",
+        "reference_contexts": [
+            "The cyclone had set the house down very gently—for a cyclone— in the midst of a country of marvelous beauty."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 7,
+            "chunk_id": "12"
+        }
+    },
+    {
+        "question": "What is known about the real Oz when he is in his own form?",
+        "ground_truth": "No living person can tell who the real Oz is when he is in his own form.",
+        "reference_contexts": [
+            "But who the real Oz is, when he is in his own form, no living person can tell."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 57,
+            "chunk_id": "143"
+        }
+    },
+    {
+        "question": "Why does Dorothy want to see the Oz?",
+        "ground_truth": "Dorothy wants to see the Oz because they shall have made their journey for nothing if they do not.",
+        "reference_contexts": [
+            "but we must try, in some way, to see him, or we shall have made our journey for nothing."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 57,
+            "chunk_id": "143"
+        }
+    },
+    {
+        "question": "What did the Woodman say to reassure the Queen of the Mice?",
+        "ground_truth": "The Woodman told the Queen of the Mice not to be afraid, saying he would not let anyone hurt her.",
+        "reference_contexts": [
+            "I will not let him, said the Woodman; so do not be afraid."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 51,
+            "chunk_id": "128"
+        }
+    },
+    {
+        "question": "Who asked if someone would bite them?",
+        "ground_truth": "The Queen of the Mice asked if someone would bite them, specifically expressing fear of being bitten by someone the Woodman was with.",
+        "reference_contexts": [
+            "At this the Queen of the Mice stuck her head out from underneath a clump of grass and asked, in a timid voice, Are you sure he will not bite us?"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 51,
+            "chunk_id": "128"
+        }
+    },
+    {
+        "question": "What was Dorothy's response to the Stork?",
+        "ground_truth": "Dorothy replied with a 'Thank you'.",
+        "reference_contexts": [
+            "Thank you, replied Dorothy, and then the kind Stork flew into the air and was soon out of sight."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 47,
+            "chunk_id": "117"
+        }
+    },
+    {
+        "question": "What were Dorothy and her companions doing after the Stork flew away?",
+        "ground_truth": "They were walking along, listening to the singing of the brightly colored birds and looking at the lovely flowers.",
+        "reference_contexts": [
+            "They walked along listening to the singing of the brightly colored birds and looking at the lovely flowers which now became so thick"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 47,
+            "chunk_id": "117"
+        }
+    },
+    {
+        "question": "What happened to the narrator when the enchanted axe slipped and what did the tinsmith do to help?",
+        "ground_truth": "The narrator's right leg, arms, and head were cut off by the axe, but the tinsmith replaced them with tin ones each time, including making a new head out of tin.",
+        "reference_contexts": [
+            "When I began chopping again, my axe slipped and cut off my right leg. Again I went to the tinsmith, and again he made me a leg out of tin. After this the enchanted axe cut off my arms, one after the other; but, nothing daunted, I had them replaced with tin ones. The Wicked Witch then made the axe slip and cut off my head, and at first I thought that was the end of me. But the tinsmith happened to come along, and he made me a new head out of tin."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 30,
+            "chunk_id": "74"
+        }
+    },
+    {
+        "question": "What did the narrator initially think after the tinsmith made him a new head out of tin, and what did he not know about his enemy?",
+        "ground_truth": "The narrator thought he had beaten the Wicked Witch, and he did not know how cruel his enemy could be, as she thought of a new way to kill his love for the beautiful Munchkin.",
+        "reference_contexts": [
+            "I thought I had beaten the Wicked Witch then, and I worked harder than ever; but I little knew how cruel my enemy could be. She thought of a new way to kill my love for the beautiful Munchkin"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 30,
+            "chunk_id": "74"
+        }
+    },
+    {
+        "question": "Why did the crows and other birds fly away from the cornfield?",
+        "ground_truth": "The crows and other birds flew away because they thought the narrator was a Munchkin.",
+        "reference_contexts": [
+            "Many crows and other birds flew into the cornfield, but as soon as they saw me they flew away again, thinking I was a Munchkin; and this pleased"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 23,
+            "chunk_id": "54"
+        }
+    },
+    {
+        "question": "What happened to the narrator after the farmer and his friend left him in the cornfield?",
+        "ground_truth": "The narrator was left alone and tried to walk after the farmer and his friend, but his feet would not touch the ground, and he was forced to stay on the pole.",
+        "reference_contexts": [
+            "He and his friend soon after walked away and left me alone. I did not like to be deserted this way. So I tried to walk after them. But my feet would not touch the ground, and I was forced to stay on that pole."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 23,
+            "chunk_id": "54"
+        }
+    },
+    {
+        "question": "What did the ruler of the Emerald City use to guard against mishap?",
+        "ground_truth": "The ruler of the Emerald City, who is the Scarecrow, used a jeweled oil-can to guard against mishap after he finished and oiled himself thoroughly.",
+        "reference_contexts": [
+            "finished, he thanked her kindly and oiled himself thoroughly with his jeweled oil-can, to guard against mishap."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 111,
+            "chunk_id": "286"
+        }
+    },
+    {
+        "question": "Why were the people of the Emerald City proud of the Scarecrow as their ruler?",
+        "ground_truth": "The people of the Emerald City were proud of the Scarecrow as their ruler because there is not another city in all the world that is ruled by a stuffed man.",
+        "reference_contexts": [
+            "For, they said, 'there is not another city in all the world that is ruled by a stuffed man.'"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 111,
+            "chunk_id": "286"
+        }
+    },
+    {
+        "question": "What did Dorothy offer to do for the Scarecrow?",
+        "ground_truth": "Dorothy offered to ask Oz to do all he can for the Scarecrow if he would come with her.",
+        "reference_contexts": [
+            "If you will come with me I'll ask Oz to do all he can for you."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 19,
+            "chunk_id": "45"
+        }
+    },
+    {
+        "question": "How did Toto initially react to the Scarecrow?",
+        "ground_truth": "Toto did not like the Scarecrow at first, smelled around him as if he suspected there might be a nest of rats in the straw, and often growled in an unfriendly way.",
+        "reference_contexts": [
+            "Toto did not like this addition to the party at first. He smelled around the stuffed man as if he suspected there might be a nest of rats in the straw, and he often growled in an unfriendly way at the Scarecrow."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 19,
+            "chunk_id": "45"
+        }
+    },
+    {
+        "question": "Why did the group jump down from the wall instead of pulling the ladder up?",
+        "ground_truth": "The group jumped down from the wall because they found the ladder so heavy they could not pull it up, and they did so in a way that would not hurt their feet or the Scarecrow's head.",
+        "reference_contexts": [
+            "They found the ladder so heavy they could not pull it up, so the Scarecrow fell off the wall and the others jumped down upon him so that the hard floor would not hurt their feet."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 122,
+            "chunk_id": "311"
+        }
+    },
+    {
+        "question": "What was the first thing the group encountered as they began walking through the country of the china people?",
+        "ground_truth": "The first thing they came to was a china milkmaid milking a china cow.",
+        "reference_contexts": [
+            "They began walking through the country of the china people, and the first thing they came to was a china milkmaid milking a china cow."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 122,
+            "chunk_id": "311"
+        }
+    },
+    {
+        "question": "How did the tinsmiths' work affect the Woodman?",
+        "ground_truth": "The tinsmiths did a good job, and as the Woodman was not a vain man, he did not mind the patches at all.",
+        "reference_contexts": [
+            "tinsmiths did a good job, and as the Woodman was not a vain man he did not mind the patches at all."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 85,
+            "chunk_id": "221"
+        }
+    },
+    {
+        "question": "What did the Lion use to wipe his eyes and what happened to it?",
+        "ground_truth": "The Lion used the tip of his tail to wipe his eyes, which became quite wet, and he had to hold it in the sun to dry.",
+        "reference_contexts": [
+            "As for the Lion, he wiped his eyes so often with the tip of his tail that it became quite wet, and he was obliged to go out into the courtyard and hold it in the sun till it dried."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 85,
+            "chunk_id": "221"
+        }
+    },
+    {
+        "question": "What did Dorothy say to the little woman when she was called a sorceress?",
+        "ground_truth": "Dorothy said, with hesitation, 'You are very kind, but there must be some mistake. I have not killed anything.'",
+        "reference_contexts": [
+            "But the little woman evidently expected her to answer; so Dorothy said, with hesitation, 'You are very kind, but there must be some mistake. I have not killed anything.'"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 8,
+            "chunk_id": "16"
+        }
+    },
+    {
+        "question": "How did the little old woman respond to Dorothy's claim of not killing anything?",
+        "ground_truth": "The little old woman replied, 'Your house did, anyway,' and she continued, pointing to something, implying that the house's action is the same as Dorothy's.",
+        "reference_contexts": [
+            "'Your house did, anyway,' replied the little old woman, with a laugh, 'and that is the same thing. See!' she continued, pointing to"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 8,
+            "chunk_id": "16"
+        }
+    },
+    {
+        "question": "How did the little old woman greet Dorothy when she approached the house?",
+        "ground_truth": "The little old woman walked up to Dorothy, made a low bow and said, in a sweet voice, 'You are welcome, most noble Sorceress, to the land of the Munchkins. We are so grateful to you for having killed the Wicked Witch of the East, and for setting our people free from bondage.'",
+        "reference_contexts": [
+            "But the little old woman walked up to Dorothy, made a low bow and said, in a sweet voice: 'You are welcome, most noble Sorceress, to the land of the Munchkins. We are so grateful to you for having killed the Wicked Witch of the East, and for setting our people free from bondage.'"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 8,
+            "chunk_id": "15"
+        }
+    },
+    {
+        "question": "What were the physical characteristics of the little old woman?",
+        "ground_truth": "The little old woman had a face covered with wrinkles, her hair was nearly white, and she walked rather stiffly.",
+        "reference_contexts": [
+            "But the little woman was doubtless much older. Her face was covered with wrinkles, her hair was nearly white, and she walked rather stiffly."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 8,
+            "chunk_id": "15"
+        }
+    },
+    {
+        "question": "Why did the Scarecrow refuse the bread offered by Dorothy?",
+        "ground_truth": "The Scarecrow refused the bread because he is never hungry and his mouth is only painted. If he were to cut a hole in his mouth to eat, the straw he is stuffed with would come out and spoil the shape of his head.",
+        "reference_contexts": [
+            "I am never hungry, he said, and it is a lucky thing I am not, for my mouth is only painted, and if I should cut a hole in it so I could eat, the straw I am stuffed with would come out, and that would spoil the shape of my head."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 21,
+            "chunk_id": "49"
+        }
+    },
+    {
+        "question": "What did Dorothy and her companion do at noon?",
+        "ground_truth": "At noon, Dorothy and her companion sat down by the roadside, near a little brook, and Dorothy opened her basket to get out some bread.",
+        "reference_contexts": [
+            "At noon they sat down by the roadside, near a little brook, and Dorothy opened her basket and got out some bread."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 21,
+            "chunk_id": "49"
+        }
+    },
+    {
+        "question": "What are the names of Dorothy's friends that are traveling with her?",
+        "ground_truth": "Dorothy's friends that are traveling with her are the Tin Woodman and the Cowardly Lion.",
+        "reference_contexts": [
+            "I am Dorothy, answered the girl, and these are my friends, the Tin Woodman and the Cowardly Lion; and we are going to the Emerald City."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 46,
+            "chunk_id": "114"
+        }
+    },
+    {
+        "question": "Where is Dorothy and her friends going?",
+        "ground_truth": "Dorothy and her friends are going to the Emerald City.",
+        "reference_contexts": [
+            "I am Dorothy, answered the girl, and these are my friends, the Tin Woodman and the Cowardly Lion; and we are going to the Emerald City."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 46,
+            "chunk_id": "114"
+        }
+    },
+    {
+        "question": "What happened to the Lion as they walked through the flowers?",
+        "ground_truth": "The Lion had fallen asleep among the poppies because the flowers had been too strong for him.",
+        "reference_contexts": [
+            "The flowers had been too strong for the huge beast and he had given up at last, and fallen only a short distance from the end of the poppy bed, where the sweet grass spread in beautiful green fields before them."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 49,
+            "chunk_id": "122"
+        }
+    },
+    {
+        "question": "What did the Tin Woodman suggest they should do with the sleeping Lion?",
+        "ground_truth": "The Tin Woodman suggested that they leave the Lion to sleep on forever, as he was too heavy to lift, and perhaps he would dream that he has found courage at last.",
+        "reference_contexts": [
+            "'We can do nothing for him,' said the Tin Woodman, sadly; 'for he is much too heavy to lift. We must leave him here to sleep on forever, and perhaps he will dream that he has found courage at last.'"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 49,
+            "chunk_id": "122"
+        }
+    },
+    {
+        "question": "What did the Wizard Oz think about having a heart?",
+        "ground_truth": "The Wizard Oz thought that having a heart makes most people unhappy and that the Tin Woodman was in luck not to have one.",
+        "reference_contexts": [
+            "Why, as for that, answered Oz, 'I think you are wrong to want a heart. It makes most people unhappy. If you only knew it, you are in luck not to have a heart.'"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 102,
+            "chunk_id": "265"
+        }
+    },
+    {
+        "question": "How long did the little man need to consider how to get Dorothy back to Kansas?",
+        "ground_truth": "The little man needed two or three days to consider the matter and try to find a way to carry Dorothy over the desert.",
+        "reference_contexts": [
+            "Give me two or three days to consider the matter and I'll try to find a way to carry you over the desert."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 102,
+            "chunk_id": "265"
+        }
+    },
+    {
+        "question": "What happens to the inhabitants of the china country when they are taken away?",
+        "ground_truth": "When taken away, the joints of the inhabitants of the china country stiffen, and they can only stand straight and look pretty.",
+        "reference_contexts": [
+            "But whenever any of us are taken away our joints at once stiffen, and we can only stand straight and look pretty."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 124,
+            "chunk_id": "317"
+        }
+    },
+    {
+        "question": "How did Dorothy and the travelers navigate through the china country?",
+        "ground_truth": "Dorothy and the travelers walked carefully through the china country, as the little animals and people scampered out of their way, fearing they would break them.",
+        "reference_contexts": [
+            "They walked carefully through the china country. The little animals and all the people scampered out of their way, fearing the strangers would break them, and after an hour or so the travelers reached the other side of the country and came to another china wall."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 124,
+            "chunk_id": "317"
+        }
+    },
+    {
+        "question": "What kind of landscape did the little girl find herself in?",
+        "ground_truth": "The little girl found herself in a country of marvelous beauty with lovely patches of greensward, stately trees bearing rich and luscious fruits, banks of gorgeous flowers, and a small brook.",
+        "reference_contexts": [
+            "in the midst of a country of marvelous beauty. There were lovely patches of greensward all about, with stately trees bearing rich and luscious fruits. Banks of gorgeous flowers were on every hand, and birds with rare and brilliant plumage sang and fluttered in the trees and bushes. A little way off was a small brook, rushing and sparkling along between green banks, and murmuring in a voice very grateful to a little girl who had lived so long on the dry, gray prairies."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 7,
+            "chunk_id": "13"
+        }
+    },
+    {
+        "question": "What was notable about the people approaching the little girl?",
+        "ground_truth": "The people approaching the little girl were the queerest people she had ever seen and they were not as big as the grown folk.",
+        "reference_contexts": [
+            "While she stood looking eagerly at the strange and beautiful sights, she noticed coming toward her a group of the queerest people she had ever seen. They were not as big as the grown folk"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 7,
+            "chunk_id": "13"
+        }
+    },
+    {
+        "question": "What is Dorothy's desired timeline for starting her journey?",
+        "ground_truth": "Dorothy should like to start as soon as possible.",
+        "reference_contexts": [
+            "But I should like to start as soon as possible."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 114,
+            "chunk_id": "295"
+        }
+    },
+    {
+        "question": "To whom does the narrator attribute their good luck?",
+        "ground_truth": "The narrator attributes their good luck to her, presumably referring to Dorothy.",
+        "reference_contexts": [
+            "So my good luck is all due to her, and I shall never leave her until she starts back to Kansas for good and all."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 114,
+            "chunk_id": "295"
+        }
+    },
+    {
+        "question": "What happened to the two Kalidahs when the tree fell?",
+        "ground_truth": "The two Kalidahs were carried by the falling tree into the gulf and were dashed to pieces on the sharp rocks at the bottom.",
+        "reference_contexts": [
+            "Woodman began to use his axe at once, and, just as the two Kalidahs were nearly across, the tree fell with a crash into the gulf, carrying the ugly, snarling brutes with it, and both were dashed to pieces on the sharp rocks at the bottom."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 42,
+            "chunk_id": "104"
+        }
+    },
+    {
+        "question": "Why did Dorothy have to ride on the Lion's back?",
+        "ground_truth": "Dorothy had to ride on the Lion's back because she became tired from walking fast with the other travelers.",
+        "reference_contexts": [
+            "This adventure made the travelers more anxious than ever to get out of the forest, and they walked so fast that Dorothy became tired, and had to ride on the Lion's back."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 42,
+            "chunk_id": "104"
+        }
+    },
+    {
+        "question": "What was the condition of the Tin Woodman's axe when they found him?",
+        "ground_truth": "The Tin Woodman's axe was near him, but the blade was rusted and the handle was broken off short.",
+        "reference_contexts": [
+            "His axe was near him, but the blade was rusted and the handle broken off short."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 85,
+            "chunk_id": "219"
+        }
+    },
+    {
+        "question": "Did the Winkies have skilled tinsmiths among their people?",
+        "ground_truth": "Yes, some of the Winkies were very good tinsmiths.",
+        "reference_contexts": [
+            "Oh, yes. Some of us are very good tinsmiths,"
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 85,
+            "chunk_id": "219"
+        }
+    },
+    {
+        "question": "Why did the Stork initially hesitate to retrieve the Scarecrow from the river?",
+        "ground_truth": "The Stork initially hesitated because the Scarecrow seemed too big and heavy for her to carry.",
+        "reference_contexts": [
+            "If he wasn't so big and heavy I would get him for you, remarked the Stork."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 47,
+            "chunk_id": "115"
+        }
+    },
+    {
+        "question": "How did the Stork finally decide to handle retrieving the Scarecrow?",
+        "ground_truth": "The Stork decided to try and carry the Scarecrow, but warned that if he was too heavy, she would have to drop him in the river again.",
+        "reference_contexts": [
+            "Well, I'll try, said the Stork, but if I find he is too heavy to carry I shall have to drop him in the river again."
+        ],
+        "metadata": {
+            "source": "The_Wonderful_Wizard_of_Oz-L._Frank_Baum.pdf",
+            "page": 47,
+            "chunk_id": "115"
         }
     }
 ]

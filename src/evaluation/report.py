@@ -10,6 +10,43 @@ import pandas as pd
 from config import settings
 
 
+def extract_summary_scores(result) -> dict[str, float]:
+    """
+    Convert different result shapes (RAGAS EvaluationResult or dict-like)
+    into a metric->average score mapping.
+    """
+    # RAGAS EvaluationResult stores aggregate means in a repr dict.
+    if hasattr(result, "_repr_dict") and isinstance(result._repr_dict, dict):
+        return {
+            str(metric): float(score)
+            for metric, score in result._repr_dict.items()
+            if score is not None and pd.notna(score)
+        }
+
+    # Fallback: average per-row scores when available.
+    if hasattr(result, "scores") and isinstance(result.scores, list) and result.scores:
+        scores_df = pd.DataFrame(result.scores)
+        summary: dict[str, float] = {}
+        for col in scores_df.columns:
+            numeric = pd.to_numeric(scores_df[col], errors="coerce")
+            mean_val = numeric.mean(skipna=True)
+            if pd.notna(mean_val):
+                summary[str(col)] = float(mean_val)
+        return summary
+
+    # Backward-compatible dict-like support.
+    if hasattr(result, "items"):
+        summary = {}
+        for metric, score in result.items():
+            try:
+                summary[str(metric)] = float(score)
+            except (TypeError, ValueError):
+                continue
+        return summary
+
+    return {}
+
+
 def generate_markdown_report(result, raw_df: pd.DataFrame, output_dir: Path) -> Path:
     """
     Generates a markdown report summarizing evaluation results and saves it.
@@ -27,11 +64,11 @@ def generate_markdown_report(result, raw_df: pd.DataFrame, output_dir: Path) -> 
     report_path = output_dir / f"report_{timestamp}.md"
 
     # 1. Summary of overall average scores
+    summary_scores = extract_summary_scores(result)
     summary_rows = []
     failed_metrics = []
-    
-    # In Ragas, the result is dict-like
-    for metric, score in result.items():
+
+    for metric, score in summary_scores.items():
         threshold = None
         if metric == "faithfulness":
             threshold = settings.eval.faithfulness_threshold
@@ -46,6 +83,9 @@ def generate_markdown_report(result, raw_df: pd.DataFrame, output_dir: Path) -> 
         summary_rows.append(
             f"| **{metric}** | {score:.4f} | {f'{threshold:.2f}' if threshold else 'N/A'} | {status} |"
         )
+
+    if not summary_rows:
+        summary_rows.append("| _No numeric metric scores available_ | N/A | N/A | N/A |")
 
     summary_table = "\n".join(summary_rows)
 
