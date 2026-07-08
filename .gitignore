@@ -42,3 +42,12 @@ data/pdfs/
 # Exclude test reranker and skill docs
 test_reranker.py
 SKILL.md
+
+# Scratch experiments
+scratch/
+
+# Generated evaluation reports
+data/eval_reports/
+
+# Generated retrieval index (rebuilt by --ingest)
+data/bm25_index.pkl
