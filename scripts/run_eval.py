@@ -10,6 +10,12 @@ import os
 import argparse
 from pathlib import Path
 
+# Windows terminals default to a non-UTF-8 codepage, which crashes on the
+# checkmark/cross emoji printed below — force UTF-8 stdout/stderr.
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # Allow imports from project root and src/
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
@@ -20,18 +26,47 @@ from evaluation.evaluator import RagasEvaluator
 from evaluation.report import generate_markdown_report, extract_summary_scores
 
 
+# When --eval-provider is switched without --eval-model, fall back to a model
+# that actually exists on that provider instead of reusing the settings default
+# (which is a Gemini model name and 404s on Ollama/Groq).
+DEFAULT_EVAL_MODEL = {
+    "gemini": "gemini-2.5-flash-lite",
+    "groq":   "llama-3.3-70b-versatile",
+    "ollama": "qwen3:4b",
+}
+
+# Only faithfulness and answer_relevancy are enforced by the quality gate below,
+# so they are the default. context_precision (one LLM call per retrieved chunk)
+# and context_recall are opt-in via --metrics to avoid blowing free-tier quotas.
+DEFAULT_METRICS = ["faithfulness", "answer_relevancy"]
+
+
 def run_evaluation(
     num_samples: int | None = None,
-    provider: str = "groq",
-    model: str = "llama-3.1-8b-instant",
+    provider: str | None = None,
+    model: str | None = None,
+    eval_provider: str | None = None,
+    eval_model: str | None = None,
     metrics: list[str] | None = None,
 ) -> None:
-    # Route both the RAG generation step and the RAGAS eval LLM through the
-    # chosen provider. The global `settings` singleton is read at call-time by
-    # LLMProvider/Generator, so overriding it here is enough.
-    settings.llm.provider = provider
-    settings.llm.model = model
-    print(f"Evaluation LLM provider: {provider} (model: {model})")
+    # Generation LLM
+    if provider:
+        settings.llm.provider = provider
+    if model:
+        settings.llm.model = model
+
+    # Evaluation LLM (separate from generation — uses a stronger model for accurate metrics)
+    if eval_provider:
+        settings.eval_llm.provider = eval_provider
+        # If the provider was switched but no model was given, pick a model that
+        # exists on that provider rather than keeping the (Gemini) default.
+        if not eval_model:
+            eval_model = DEFAULT_EVAL_MODEL.get(eval_provider.lower())
+    if eval_model:
+        settings.eval_llm.model = eval_model
+
+    print(f"Generation LLM: {settings.llm.provider} ({settings.llm.model})")
+    print(f"Evaluation LLM: {settings.eval_llm.provider} ({settings.eval_llm.model})")
 
     dataset_path = settings.paths.golden_dataset
     print(f"Loading benchmark dataset from: {dataset_path}")
@@ -122,29 +157,46 @@ def main() -> None:
     parser.add_argument(
         "--provider",
         type=str,
-        default="groq",
-        help="LLM provider for generation + RAGAS eval (default: groq)",
+        default=None,
+        help="LLM provider for generation (default: settings.llm.provider)",
     )
     parser.add_argument(
         "--model",
         type=str,
-        default="llama-3.1-8b-instant",
-        help="Model name for the chosen provider (default: llama-3.1-8b-instant)",
+        default=None,
+        help="Model name for generation (default: settings.llm.model)",
+    )
+    parser.add_argument(
+        "--eval-provider",
+        type=str,
+        default=None,
+        help="LLM provider for RAGAS evaluation (default: settings.eval_llm.provider)",
+    )
+    parser.add_argument(
+        "--eval-model",
+        type=str,
+        default=None,
+        help="Model name for RAGAS evaluation (default: settings.eval_llm.model)",
     )
     parser.add_argument(
         "--metrics",
         nargs="+",
-        default=None,
-        choices=["faithfulness", "answer_relevancy", "context_precision", "context_recall"],
+        default=DEFAULT_METRICS,
+        choices=["faithfulness", "answer_relevancy", "context_precision",
+                 "context_recall", "answer_correctness"],
         metavar="METRIC",
-        help="Metrics to compute (default: all). For fast iteration use the gated "
-             "pair: --metrics faithfulness answer_relevancy",
+        help="Metrics to compute (default: the gated pair, faithfulness "
+             "answer_relevancy). Add answer_correctness for a ground-truth-based "
+             "correctness signal, or context_precision context_recall for a full "
+             "run — note context_precision fires one LLM call per retrieved chunk.",
     )
     args = parser.parse_args()
     run_evaluation(
         num_samples=args.num_samples,
         provider=args.provider,
         model=args.model,
+        eval_provider=args.eval_provider,
+        eval_model=args.eval_model,
         metrics=args.metrics,
     )
 

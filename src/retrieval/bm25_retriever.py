@@ -43,7 +43,7 @@ class BM25Retriever:
         )
 
         top_indices = ranked_indices[
-            : settings.retrieval.top_k
+            : settings.retrieval.candidate_k
         ]
 
         results = []

@@ -31,6 +31,7 @@ from ragas.metrics._faithfulness import Faithfulness
 from ragas.metrics._answer_relevance import AnswerRelevancy
 from ragas.metrics._context_precision import ContextPrecision
 from ragas.metrics._context_recall import ContextRecall
+from ragas.metrics._answer_correctness import AnswerCorrectness
 
 
 class RagasLLMWrapper(BaseRagasLLM):
@@ -80,6 +81,12 @@ class RagasEmbeddingsWrapper(BaseRagasEmbeddings):
     def __init__(self, embedder: Embedder):
         super().__init__()
         self.embedder = embedder
+        # AnswerCorrectness -> AnswerSimilarity reads embeddings.run_config;
+        # give it a default and honor set_run_config() from evaluate().
+        self.run_config = RunConfig()
+
+    def set_run_config(self, run_config: RunConfig) -> None:
+        self.run_config = run_config
 
     def embed_query(self, text: str) -> list[float]:
         return self.embedder.encode_query(text).tolist()
@@ -103,7 +110,10 @@ class RagasEvaluator:
     def __init__(self):
         self.retriever = Retriever()
         self.generator = Generator()
-        self.llm_provider = LLMProvider()
+        self.eval_llm = LLMProvider(
+            provider=settings.eval_llm.provider,
+            model=settings.eval_llm.model,
+        )
         self.embedder = Embedder()
 
     def run_pipeline_on_dataset(self, golden_ds: GoldenDataset) -> pd.DataFrame:
@@ -143,16 +153,20 @@ class RagasEvaluator:
         """
         dataset = Dataset.from_pandas(df)
 
-        # Instantiate wrappers
-        ragas_llm = RagasLLMWrapper(self.llm_provider)
+        # Instantiate wrappers — use the eval-specific LLM for RAGAS metrics
+        ragas_llm = RagasLLMWrapper(self.eval_llm)
         ragas_embeddings = RagasEmbeddingsWrapper(self.embedder)
 
         # Metric registry — built lazily so we only construct the ones requested.
         metric_factory = {
-            "faithfulness":      lambda: Faithfulness(llm=ragas_llm),
-            "answer_relevancy":  lambda: AnswerRelevancy(llm=ragas_llm, embeddings=ragas_embeddings),
-            "context_precision": lambda: ContextPrecision(llm=ragas_llm),
-            "context_recall":    lambda: ContextRecall(llm=ragas_llm),
+            "faithfulness":       lambda: Faithfulness(llm=ragas_llm),
+            "answer_relevancy":   lambda: AnswerRelevancy(llm=ragas_llm, embeddings=ragas_embeddings),
+            "context_precision":  lambda: ContextPrecision(llm=ragas_llm),
+            "context_recall":     lambda: ContextRecall(llm=ragas_llm),
+            # Correctness compares the answer to ground_truth (not just its
+            # phrasing), so short factual answers aren't punished the way
+            # answer_relevancy punishes them.
+            "answer_correctness": lambda: AnswerCorrectness(llm=ragas_llm, embeddings=ragas_embeddings),
         }
 
         if metric_names is None:
@@ -176,11 +190,15 @@ class RagasEvaluator:
             "reference": "ground_truth",
         }
 
-        # Local Ollama is single-threaded on CPU, so keep it sequential. Cloud
-        # providers (Groq/Gemini) tolerate concurrency, which turns dozens of
-        # sequential round-trips into a handful of parallel batches.
-        provider = settings.llm.provider.lower()
-        max_workers = 1 if provider == "ollama" else 4
+        # Local Ollama is single-threaded on CPU, so keep it sequential. Groq's
+        # free tier caps at 12k TPM and context_precision/context_recall send
+        # large prompts, so it also runs sequential — the per-call delay in
+        # LLMProvider._groq() paces requests to stay under the cap. Gemini
+        # tolerates concurrency, which turns dozens of sequential round-trips
+        # into a handful of parallel batches.
+        # (This gates on eval_llm, not llm — RAGAS calls the *evaluation* LLM.)
+        provider = settings.eval_llm.provider.lower()
+        max_workers = 1 if provider in ("ollama", "groq") else 2
 
         # Allow up to 15 min per LLM call and cap retries to avoid spending hours
         # on transient failures.
@@ -194,7 +212,7 @@ class RagasEvaluator:
             embeddings=ragas_embeddings,
             column_map=column_map,
             run_config=run_config,
-            raise_exceptions=False,
+            raise_exceptions=True,
         )
 
         return result

@@ -53,6 +53,6 @@ def chunk_pages(
     if not chunks:
         raise RuntimeError("No chunks produced — check that pages contain text.")
 
-    print(f"[chunker] {len(pages)} pages → {len(chunks)} chunks "
+    print(f"[chunker] {len(pages)} pages -> {len(chunks)} chunks "
           f"(size={chunk_size}, overlap={chunk_overlap})")
     return chunks

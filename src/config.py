@@ -5,15 +5,16 @@ Single source of truth for every setting.
 All other modules do:  from config import settings
 
 Load order (later overrides earlier):
-  1. config.yaml   — tracked in git, safe defaults
-  2. .env          — git-ignored, local overrides
-  3. RAG_* env vars — for CI / quick terminal tweaks
+  1. .env          — git-ignored, local overrides
+  2. RAG_* env vars — for CI / quick terminal tweaks
       e.g.  RAG_LLM__MODEL=llama3:8b  RAG_RETRIEVAL__TOP_K=10
 """
 
 from __future__ import annotations
 
-import yaml
+from pathlib import Path
+from pydantic import field_validator, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 try:
     import torch as _torch
@@ -21,10 +22,6 @@ try:
 except ImportError:
     _torch = None
     _TORCH_AVAILABLE = False
-
-from pathlib import Path
-from pydantic import field_validator, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 # ── Project root ──────────────────────────────────────────────────────────────
@@ -58,8 +55,8 @@ class PathSettings(BaseSettings):
 
 
 class ChunkingSettings(BaseSettings):
-    chunk_size:    int = 800
-    chunk_overlap: int = 100
+    chunk_size:    int = 400
+    chunk_overlap: int = 80
 
     @field_validator("chunk_overlap")
     @classmethod
@@ -73,7 +70,7 @@ class ChunkingSettings(BaseSettings):
 
 
 class EmbeddingSettings(BaseSettings):
-    model:      str = "BAAI/bge-small-en-v1.5"
+    model:      str = "BAAI/bge-base-en-v1.5"
     batch_size: int = 32
     device:     str = "cpu"  # or "auto", "cuda", "mps"
 
@@ -96,7 +93,7 @@ class ChromaSettings(BaseSettings):
 
 class RetrievalSettings(BaseSettings):
     top_k:       int   = 5
-    candidate_k: int   = 20
+    candidate_k: int   = 30
     mode:        str   = "hybrid"
     bm25_weight: float = 0.4
 
@@ -131,11 +128,24 @@ class LLMSettings(BaseSettings):
 class PromptSettings(BaseSettings):
     system: str = (
         "You are a precise research assistant. "
-        "Answer ONLY using the provided context. "
-        "If the context does not contain enough information to answer, say exactly: "
+        "Answer ONLY using the provided context. Do not speculate or use prior knowledge. "
+        "Give a single, direct sentence that answers the question — no preamble, no "
+        "meta-commentary, no reasoning about the text, and no hedging. "
+        "If, and ONLY if, the context contains no answer at all, reply with exactly: "
         "'I don't have enough information in the provided documents to answer this.' "
-        "Do not speculate. Do not use prior knowledge. "
+        "Never append that sentence to an answer you have already given. "
+        "Do not invent chapter numbers, page numbers, or source names that are not "
+        "explicitly given to you — only reference the sources listed under "
+        "'Sources available' if you need to cite one. "
     )
+
+
+class EvalLLMSettings(BaseSettings):
+    provider: str = "gemini"
+    # Flash-Lite gives 1,000 req/day + 15 req/min on the free tier (vs. 20/day
+    # for gemini-2.5-flash) and is capable enough for RAGAS's structured JSON.
+    model: str = "gemini-2.5-flash-lite"
+    temperature: float = 0.0
 
 
 class EvalSettings(BaseSettings):
@@ -162,35 +172,13 @@ class Settings(BaseSettings):
     retrieval: RetrievalSettings = RetrievalSettings()
     reranker:  RerankerSettings  = RerankerSettings()
     llm:       LLMSettings       = LLMSettings()
+    eval_llm:  EvalLLMSettings   = EvalLLMSettings()
     prompts:   PromptSettings    = PromptSettings()
     eval:      EvalSettings      = EvalSettings()
 
 
-def _load_yaml() -> dict:
-    p = PROJECT_ROOT / "config.yaml"
-    if not p.exists():
-        return {}
-    with open(p) as f:
-        return yaml.safe_load(f) or {}
-
-
 def _build_settings() -> Settings:
     return Settings()
-
-# def _build_settings() -> Settings:
-#     d = _load_yaml()
-#     return Settings(
-#         paths=PathSettings(**d.get("paths", {})),
-#         chunking=ChunkingSettings(**d.get("chunking", {})),
-#         embedding=EmbeddingSettings(**d.get("embedding", {})),
-#         chroma=ChromaSettings(**d.get("chroma", {})),
-#         retrieval=RetrievalSettings(**d.get("retrieval", {})),
-#         reranker=RerankerSettings(**d.get("reranker", {})),
-#         llm=LLMSettings(**d.get("llm", {})),
-#         prompts=PromptSettings(**d.get("prompts", {})),
-#         eval=EvalSettings(**d.get("eval", {})),
-#     )
-
 
 settings = _build_settings()
 
@@ -201,10 +189,12 @@ if __name__ == "__main__":
     print(f"  project root   : {PROJECT_ROOT}")
     print(f"  pdf_folder     : {settings.paths.pdf_folder}")
     print(f"  chroma_db      : {settings.paths.chroma_db}")
-    print(f"  chunk_size     : {settings.chunking.chunk_size}")
-    print(f"  chunk_overlap  : {settings.chunking.chunk_overlap}")
-    print(f"  embedding model: {settings.embedding.model}")
-    print(f"  device         : {settings.embedding.resolved_device}")
-    print(f"  llm model      : {settings.llm.model}")
-    print(f"  retrieval mode : {settings.retrieval.mode}")
-    print(f"  top_k          : {settings.retrieval.top_k}")
+    print(f"  chunk_size      : {settings.chunking.chunk_size}")
+    print(f"  chunk_overlap   : {settings.chunking.chunk_overlap}")
+    print(f"  embedding model : {settings.embedding.model}")
+    print(f"  device          : {settings.embedding.resolved_device}")
+    print(f"  gen llm model   : {settings.llm.model}")
+    print(f"  eval llm model  : {settings.eval_llm.model}")
+    print(f"  retrieval mode  : {settings.retrieval.mode}")
+    print(f"  top_k           : {settings.retrieval.top_k}")
+    print(f"  candidate_k     : {settings.retrieval.candidate_k}")

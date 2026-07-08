@@ -103,12 +103,21 @@ def generate_markdown_report(result, raw_df: pd.DataFrame, output_dir: Path) -> 
         if not scores_df.empty and idx < len(scores_df):
             row_scores = scores_df.iloc[idx]
             scores_parts = []
-            for m in ["faithfulness", "answer_relevancy", "context_precision", "context_recall"]:
+            # Explicit labels — m[:2] would collide (answer_relevancy vs
+            # answer_correctness, context_precision vs context_recall).
+            metric_labels = {
+                "faithfulness":       "FA",
+                "answer_relevancy":   "AR",
+                "context_precision":  "CP",
+                "context_recall":     "CR",
+                "answer_correctness": "AC",
+            }
+            for m, label in metric_labels.items():
                 if m in row_scores:
                     val = row_scores[m]
                     # Check for NaN / None
                     val_str = f"{val:.2f}" if pd.notna(val) else "N/A"
-                    scores_parts.append(f"{m[:2].upper()}: {val_str}")
+                    scores_parts.append(f"{label}: {val_str}")
             scores_str = " | ".join(scores_parts)
 
         # Truncate context string for readability in report
