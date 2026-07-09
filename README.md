@@ -1,12 +1,30 @@
 # 🚀 RAGGED
 
+![Python](https://img.shields.io/badge/python-3.12%2B-blue)
+![Status](https://img.shields.io/badge/status-active%20development-yellow)
+![License](https://img.shields.io/badge/license-unspecified-lightgrey)
+![Local First](https://img.shields.io/badge/privacy-local--first-brightgreen)
+
 > A privacy-first, fully local Retrieval-Augmented Generation (RAG) system built from scratch in Python.
 
-RAGGED transforms your documents into a searchable knowledge base and allows Large Language Models (LLMs) to answer questions grounded in your own data.
-
-Instead of relying solely on an LLM's training data, RAGGED retrieves relevant information from your documents at query time and injects that context into the model's prompt, dramatically improving factual accuracy and reducing hallucinations.
+RAGGED transforms your documents into a searchable knowledge base and allows Large Language Models (LLMs) to answer questions grounded in your own data — hybrid retrieval, cross-encoder reranking, and RAGAS-based quality gates included.
 
 Everything runs locally on your machine. No OpenAI required. No cloud dependency. No vendor lock-in.
+
+---
+
+## Table of Contents
+
+* [Why RAG?](#why-rag)
+* [How RAGGED Works](#how-ragged-works)
+* [Features](#features)
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [Quick Start](#quick-start)
+* [Evaluation](#evaluation)
+* [Project Status](#project-status)
+* [Tech Stack](#tech-stack)
+* [Author](#author)
 
 ---
 
@@ -29,108 +47,51 @@ This allows the model to answer questions about information it was never trained
 
 ## How RAGGED Works
 
-```text
-       Documents
-           │
-           ▼
-       PDF Loader
-           │
-           ▼
-        Chunking
-       /        \
-      ▼          ▼
- Embeddings   BM25 Index
- (Semantic)   (Lexical)
-      │          │
-      ▼          ▼
-  ChromaDB       │
-      \          /
-       ▼        ▼
-     Hybrid Search
-    (RRF Fusion)
-         │
-         ▼
-    Cross-Encoder
-      Reranking
-         │
-         ▼
- Prompt Construction
-         │
-         ▼
-     Local LLM
-         │
-         ▼
-      Answer
-         │
-         ▼
-   RAGAS Evaluation
-  (Quality Gate)
+```mermaid
+flowchart TD
+    A[Documents] --> B[PDF Loader]
+    B --> C[Chunking]
+    C --> D[Embeddings<br/>Semantic]
+    C --> E[BM25 Index<br/>Lexical]
+    D --> F[ChromaDB]
+    F --> G[Hybrid Search<br/>RRF Fusion]
+    E --> G
+    G --> H[Cross-Encoder<br/>Reranking]
+    H --> I[Prompt Construction]
+    I --> J[Local LLM]
+    J --> K[Answer]
+    K --> L[RAGAS Evaluation<br/>Quality Gate]
 ```
 
 A query flows through hybrid search, fusion, reranking, and generation:
 
-```text
-Question: "Why did the Tin Woodman rust?"
-   ↓  Hybrid Search        Vector similarity + BM25 lexical
-   ↓  Reciprocal Rank Fusion   Merge candidate rankings (RRF)
-   ↓  Cross-Encoder Rerank     MS-MARCO MiniLM precision pass
-   ↓  Context Construction     Top chunks sorted by rerank score
-   ↓  LLM Generation
-Grounded Answer
+```mermaid
+flowchart LR
+    Q["\"Why did the Tin Woodman rust?\""] --> S[Hybrid Search<br/><sub>Vector similarity + BM25 lexical</sub>]
+    S --> R[Reciprocal Rank Fusion<br/><sub>Merge candidate rankings</sub>]
+    R --> X[Cross-Encoder Rerank<br/><sub>MS-MARCO MiniLM precision pass</sub>]
+    X --> C[Context Construction<br/><sub>Top chunks sorted by rerank score</sub>]
+    C --> G[LLM Generation]
+    G --> A[Grounded Answer]
 ```
 
 ---
 
 ## Features
 
-### Document Ingestion
-* PDF loading via PyMuPDF
-* Multi-document knowledge bases
-* Automatic metadata extraction and source tracking
-
-### Chunking
-* Recursive character splitting
-* Configurable chunk size and overlap
-* Context preservation
-
-### Embeddings
-* `BAAI/bge-base-en-v1.5`
-* GPU acceleration with CPU fallback
-* Batch embedding generation
-
-### Vector Storage
-* ChromaDB persistence
-* Local vector database with fast similarity search
-
-### Lexical Indexing
-* BM25 retrieval powered by `rank-bm25`
-* Persistent lexical index serialization
-
-### Hybrid Retrieval & Reranking
-* Hybrid mode combining vector (semantic) + BM25 (lexical) search
-* Reciprocal Rank Fusion (RRF) for robust score combination
-* Cross-Encoder reranking (`cross-encoder/ms-marco-MiniLM-L-6-v2`) to maximize precision
-
-### Generation
-* Ollama, Groq, and Gemini support
-* Provider abstraction layer with automatic rate-limit backoff
-
-### Evaluation
-* RAGAS-based quality evaluation over a golden dataset
-* Faithfulness, answer relevancy, and answer correctness metrics
-* Automated LLM-generated benchmark testsets
-* Markdown reports with per-question score breakdowns
-* Threshold quality gates suitable for CI/CD
-
-### Configuration
-* Centralized settings via Pydantic Settings
-* Environment-variable and `.env` overrides
-* A dedicated evaluation LLM, separate from the generation LLM
-
-### Privacy
-* Fully local workflow
-* No mandatory cloud services
-* User-controlled data
+| Area | Capability |
+| --- | --- |
+| **Ingestion** | PDF loading via PyMuPDF, multi-document knowledge bases, automatic metadata & source tracking |
+| **Chunking** | Recursive character splitting, configurable size/overlap, context preservation |
+| **Embeddings** | `BAAI/bge-base-en-v1.5`, GPU acceleration with CPU fallback, batch generation |
+| **Vector Storage** | ChromaDB persistence, fast local similarity search |
+| **Lexical Indexing** | BM25 retrieval via `rank-bm25`, persistent index serialization |
+| **Hybrid Retrieval** | Vector + BM25 fusion via Reciprocal Rank Fusion (RRF) |
+| **Reranking** | Cross-Encoder precision pass (`cross-encoder/ms-marco-MiniLM-L-6-v2`) |
+| **Generation** | Ollama, Groq, and Gemini support behind a provider abstraction layer with automatic rate-limit backoff |
+| **Evaluation** | RAGAS faithfulness, answer relevancy, and answer correctness metrics over a golden dataset, with LLM-generated benchmark testsets, Markdown reports, and CI-ready threshold gates |
+| **Configuration** | Centralized Pydantic Settings, `.env` overrides, a dedicated evaluation LLM separate from the generation LLM |
+| **Privacy** | Fully local workflow, no mandatory cloud services, user-controlled data |
 
 ---
 
@@ -251,31 +212,37 @@ Useful flags:
 
 ## Project Status
 
-| Phase | Scope | Status |
-| --- | --- | --- |
-| **Phase 1** | PDF ingestion, chunking, embeddings, ChromaDB, vector retrieval, multi-provider LLM, end-to-end pipeline | ✅ Complete |
-| **Phase 2** | BM25 lexical retrieval, hybrid mode, Reciprocal Rank Fusion, retrieval diagnostics | ✅ Complete |
-| **Phase 3** | Cross-Encoder reranking, context-precision optimization, hallucination mitigation | ✅ Complete |
-| **Phase 4** | Golden datasets, RAGAS metrics, quality gates, benchmark reporting | ✅ Complete |
+**Completed**
 
-### Roadmap
+| Phase | Scope |
+| --- | --- |
+| **Phase 1** | PDF ingestion, chunking, embeddings, ChromaDB, vector retrieval, multi-provider LLM, end-to-end pipeline |
+| **Phase 2** | BM25 lexical retrieval, hybrid mode, Reciprocal Rank Fusion, retrieval diagnostics |
+| **Phase 3** | Cross-Encoder reranking, context-precision optimization, hallucination mitigation |
+| **Phase 4** | Golden datasets, RAGAS metrics, quality gates, benchmark reporting |
 
-* **Phase 5 — User Experience:** Gradio UI, drag-and-drop uploads, streaming responses, chat interface
-* **Phase 6 — Production:** Docker support, REST API, automated testing, CI/CD, monitoring
+**Planned**
+
+| Phase | Scope |
+| --- | --- |
+| **Phase 5 — User Experience** | Gradio UI, drag-and-drop uploads, streaming responses, chat interface |
+| **Phase 6 — Production** | Docker support, REST API, automated testing, CI/CD, monitoring |
 
 ---
 
 ## Tech Stack
 
-* Python
-* ChromaDB
-* Sentence Transformers
-* RAGAS
-* Ollama · Groq · Gemini
-* PyMuPDF
-* LangChain Text Splitters
-* Pydantic
-* UV
+| Layer | Technology |
+| --- | --- |
+| Language | Python |
+| Vector Store | ChromaDB |
+| Embeddings / Reranking | Sentence Transformers |
+| Evaluation | RAGAS |
+| LLM Providers | Ollama · Groq · Gemini |
+| Document Parsing | PyMuPDF |
+| Chunking | LangChain Text Splitters |
+| Config | Pydantic |
+| Tooling | UV |
 
 ---
 
